@@ -10,7 +10,7 @@ if __name__ == '__main__':
     theta0 = np.ones(NUM_OF_MASSES) * np.pi + 1e-6  # radians
     omega0 = np.zeros(NUM_OF_MASSES)  # radians/second
     t_final = 10  # seconds
-    FPS = 100
+    FPS = 30
 
     pendulum = nBodyPendulum(NUM_OF_MASSES, MASS, LENGTH,
                              np.linspace(0, t_final, t_final * FPS), theta0, omega0)

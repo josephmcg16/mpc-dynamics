@@ -59,7 +59,7 @@ class nBodyPendulum:
         force_matrix = self.mass * self.length * self.g * \
             np.diag(range(self.num_of_masses, 0, -1))
 
-        def equations_of_motion(t, y, n, mass_matrix, force_matrix, progress_bar=None):
+        def equations_of_motion(t, y, n, coefficients, progress_bar=None):
             """
             The equations of motion for the n-pendulum system.
 
@@ -73,10 +73,8 @@ class nBodyPendulum:
                 The number of masses in the n-pendulum system.
             mass_matrix : np.ndarray
                 The mass matrix for the n-pendulum system.
-            force_matrix : np.ndarray
-                The force matrix for the n-pendulum system.
-            progress_bar : tqdm, optional
-                The progress bar to update, by default None
+            coefficients : np.ndarray
+                The coefficients for the n-pendulum system. Dot product of the inverse of the mass matrix and the force matrix.
 
             Returns
             -------
@@ -88,17 +86,18 @@ class nBodyPendulum:
                 progress_bar.update(int(progress) - progress_bar.n)
             theta_vec = y[:n]
             omega_vec = y[n:]
-            omega_dot_vec = np.linalg.solve(- mass_matrix,
-                                            force_matrix).dot(theta_vec)
+            omega_dot_vec = coefficients.dot(theta_vec)
             return np.hstack([omega_vec, omega_dot_vec])
 
         if progress:
             with tqdm(total=100, desc="Solving ODE", unit="%", ncols=80, leave=True) as ode_progress_bar:
-                sol = solve_ivp(equations_of_motion, t_span, y0,
-                                t_eval=self.t_eval, args=(self.num_of_masses, mass_matrix, force_matrix, ode_progress_bar), rtol=1e-5, atol=1e-5)
+                sol = solve_ivp(equations_of_motion, t_span, y0, t_eval=self.t_eval, rtol=1e-5, atol=1e-5,
+                                args=(self.num_of_masses,
+                                      np.linalg.solve(- mass_matrix, force_matrix), ode_progress_bar))
         else:
-            sol = solve_ivp(equations_of_motion, t_span, y0,
-                            t_eval=self.t_eval, args=(self.num_of_masses, mass_matrix, force_matrix, None), rtol=1e-5, atol=1e-5)
+            sol = solve_ivp(equations_of_motion, t_span, y0, t_eval=self.t_eval, rtol=1e-5, atol=1e-5,
+                            args=(self.num_of_masses,
+                                  np.linalg.solve(- mass_matrix, force_matrix), None))
 
         self.thetas = sol.y[:self.num_of_masses]
         self.omegas = sol.y[self.num_of_masses:]

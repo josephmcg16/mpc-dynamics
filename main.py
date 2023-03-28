@@ -1,6 +1,6 @@
 """Main file for the n-body pendulum simulation."""
 import numpy as np
-from animate import animate, plot
+from animate import animate
 from pendulum import nBodyPendulum
 
 if __name__ == '__main__':

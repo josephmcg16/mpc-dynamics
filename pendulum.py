@@ -95,7 +95,7 @@ class nBodyPendulum:
                                 args=(self.num_of_masses,
                                       np.linalg.solve(- mass_matrix, force_matrix), ode_progress_bar))
         else:
-            sol = solve_ivp(equations_of_motion, t_span, y0, t_eval=self.t_eval, rtol=1e-5, atol=1e-5,
+            sol = solve_ivp(equations_of_motion, t_span, y0, t_eval=self.t_eval, rtol=1e-10, atol=1e-10,
                             args=(self.num_of_masses,
                                   np.linalg.solve(- mass_matrix, force_matrix), None))
 
